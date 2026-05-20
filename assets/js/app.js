@@ -23,3 +23,37 @@ $(document).ready(function() {
 
     console.log("🚀 Máscaras carregadas com sucesso!");
 });
+
+/**
+ * ========================================================
+ * FUNÇÃO GLOBAL: Mostrar Toast do Bootstrap dinamicamente
+ * ========================================================
+ */
+function mostrarToast(mensagem, cor = 'success') {
+    if ($('#toast-container').length === 0) {
+        $('body').append('<div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>');
+    }
+
+    const toastId = 'toast-' + Date.now();
+    const icone = cor === 'success' ? '<i class="bi bi-check-circle-fill me-2"></i>' : '<i class="bi bi-exclamation-triangle-fill me-2"></i>';
+
+    const toastHTML = `
+        <div id="${toastId}" class="toast align-items-center text-white bg-${cor} border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-semibold">
+                    ${icone} ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    $('#toast-container').append(toastHTML);
+
+    const toastElement = new bootstrap.Toast(document.getElementById(toastId), { delay: 3000 });
+    toastElement.show();
+
+    $('#' + toastId).on('hidden.bs.toast', function () {
+        $(this).remove();
+    });
+}

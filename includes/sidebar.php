@@ -18,6 +18,12 @@
                 </a>
             </li>
 
+            <li class="nav-item mb-2">
+                <a href="<?php echo BASE_URL; ?>leads.php" class="nav-link text-light <?php echo basename($_SERVER['PHP_SELF']) == 'leads.php' ? 'active bg-primary shadow-sm' : ''; ?>">
+                    <i class="bi bi-funnel-fill me-2"></i> Funil de Leads
+                </a>
+            </li>
+
             <!-- 2. A Nova Funcionalidade Sugerida: Agenda de Retornos -->
             <li class="nav-item mb-2">
                 <a href="<?php echo BASE_URL; ?>agenda.php" class="nav-link text-light <?php echo basename($_SERVER['PHP_SELF']) == 'agenda.php' ? 'active bg-primary' : ''; ?>">
