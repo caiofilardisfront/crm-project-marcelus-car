@@ -123,11 +123,14 @@ $totalLeads = countLeads($pdo);
                 <div class="card-header bg-transparent border-secondary p-3">
                     <!-- Topo: Título e Botão de Ação -->
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="m-0 fw-bold text-light">
+                        <h5 class="m-0 fw-bold text-light d-none d-md-block">
                             <i class="bi bi-funnel text-primary me-2"></i>Funil de Leads
                         </h5>
+
+                        
+
                         <button class="btn btn-primary btn-sm px-3 fw-bold shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-add-lead">
-                            <i class="bi bi-plus-lg me-2"></i> Novo Lead
+                            <i class="bi bi-plus-lg me-2"></i> <span class="d-none d-sm-inline">Novo Lead</span>
                         </button>
                     </div>
 
@@ -152,7 +155,12 @@ $totalLeads = countLeads($pdo);
                         <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold btn-filtro" data-status="lost">
                             Perdidos
                         </button>
+                        <div class="input-group input-group-sm mx-auto mx-md-3" style="max-width: 300px;">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
+                            <input type="text" id="input-busca" class="form-control bg-dark border-secondary text-light shadow-none" placeholder="Procurar cliente ou telefone...">
+                        </div>
                     </div>
+                   
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">

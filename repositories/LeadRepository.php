@@ -17,35 +17,43 @@ function countLeads($pdo)
 }
 
 /**
- * ========================================================
- * NOVA TAREFA: Função para buscar todos os leads
- * ========================================================
- * Retorna todos os leads cadastrados, ordenados do mais recente para o mais antigo.
- * @param PDO $pdo Instância da conexão com o banco
- * @return array Lista de leads (array associativo)
+ * BUSCAR LEADS COM FILTRO DE STATUS E PESQUISA POR NOME
+ * @param PDO $pdo Instância da conexão
+ * @param string $status O status para filtrar (default: 'all')
+ * @param string $search Termo de busca por nome (default: vazio)
+ * @return array Lista de leads filtrada e pesquisada
  */
-function getAllLeads($pdo, $status = 'all')
+function getAllLeads($pdo, $status = 'all', $search = '')
 {
     try {
-        // 1. Base da Query (Note que não encerramos a String aqui)
         $sql = "SELECT leads.*, users.name AS seller_name, vehicles.brand, vehicles.model
                 FROM leads
                 LEFT JOIN users ON leads.user_id = users.id
-                LEFT JOIN vehicles ON leads.vehicle_id = vehicles.id";
+                LEFT JOIN vehicles ON leads.vehicle_id = vehicles.id
+                WHERE 1=1"; // Truque sênior: 1=1 facilita adicionar múltiplos ANDs dinamicamente
 
-        // 2. Lógica de Filtragem: Só adicionamos o WHERE se o status for diferente de 'all'
+        // Lógica de Filtragem de Status
         if ($status !== 'all' && !empty($status)) {
-            $sql .= " WHERE leads.status = :status";
+            $sql .= " AND leads.status = :status";
         }
 
-        // 3. Ordenação final
+        // Lógica de Filtragem de Texto (Busca)
+        if (!empty($search)) {
+            $sql .= " AND (leads.customer_name LIKE :search OR leads.customer_phone LIKE :search)";
+        }
+
         $sql .= " ORDER BY leads.created_at DESC";
 
         $stmt = $pdo->prepare($sql);
 
-        // 4. Se houver filtro, fazemos o Bind para evitar SQL Injection
+        // Binds de Segurança
         if ($status !== 'all' && !empty($status)) {
             $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+        }
+
+        if (!empty($search)) {
+            // Adiciona as porcentagens para buscar em qualquer parte do texto
+            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
         }
 
         $stmt->execute();

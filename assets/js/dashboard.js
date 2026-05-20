@@ -85,7 +85,7 @@ function carregarOpcoesVeiculos() {
 /**
  * Função responsável por buscar os dados na API e preparar a tabela
  */
-function carregarLeads(status = 'all') {
+function carregarLeads(status = 'all', termoBusca = '') {
     console.log("Iniciando busca de leads na API...");
 
     // -> Atualiza os cards de cima junto com a tabela!
@@ -94,7 +94,10 @@ function carregarLeads(status = 'all') {
     $.ajax({
         url: 'api/leads/list_all.php',
         type: 'GET',
-        data: { status: status }, // MÁGICA: Enviamos o filtro para o PHP [1]
+        data: { 
+            status: status, 
+            search: termoBusca 
+        },
         dataType: 'json',
 
         success: function (response) {
@@ -824,4 +827,43 @@ $(document).on('click', '.btn-filtro', function() {
 
     // 2. Ação Real: Recarrega apenas a tabela com o filtro novo
     carregarLeads(statusEscolhido);
+});
+
+/**
+ * ========================================================
+ * EVENTO: PESQUISA EM TEMPO REAL (LIVE SEARCH)
+ * ========================================================
+ */
+let timerPesquisa; // Variável global para o controle do Debounce
+
+$(document).on('input', '#input-pesquisa-leads', function() {
+    // 1. Limpa o timer anterior toda vez que o usuário digita uma letra
+    clearTimeout(timerPesquisa);
+
+    // 2. Define um novo timer de 300ms
+    timerPesquisa = setTimeout(function() {
+        // A) Identifica qual status está selecionado no momento nos botões de filtro
+        // Procuramos o botão que não tem a classe 'btn-outline-secondary' (ou seja, o ativo)
+        const statusAtivo = $('.btn-filtro.btn-primary, .btn-filtro.btn-success, .btn-filtro.btn-danger').data('status') || 'all';
+        
+        // B) Dispara a busca atualizando a tabela
+        carregarLeads(statusAtivo);
+        
+    }, 300); // Espera 300ms de silêncio no teclado para agir
+});
+
+/**
+ * ========================================================
+ * EVENTO: BARRA DE PESQUISA EM TEMPO REAL
+ * ========================================================
+ */
+$(document).on('keyup', '#input-busca', function() {
+    // 1. Pega no que o utilizador acabou de digitar
+    const valorDigitado = $(this).val();
+    
+    // 2. Verifica qual botão de filtro (Novos, Vendidos, etc) está activo no momento
+    const statusAtivo = $('.btn-filtro.btn-primary, .btn-filtro.btn-success, .btn-filtro.btn-danger').data('status') || 'all';
+    
+    // 3. Dispara a busca cruzando as duas informações!
+    carregarLeads(statusAtivo, valorDigitado);
 });
