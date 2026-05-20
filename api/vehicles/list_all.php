@@ -1,29 +1,40 @@
 <?php
-// 1. Importações da nossa arquitetura (voltando duas pastas)
 require_once '../../config/config.php';
 require_once '../../config/database.php';
-require_once '../../repositories/VehicleRepository.php';
 
-// 2. Avisamos ao navegador que a resposta é estritamente JSON
 header('Content-Type: application/json');
 
-// 3. Segurança Sênior: Bloqueia acesso não autenticado
 if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
-    echo json_encode(['status' => 'error', 'message' => 'Acesso negado.']);
+    echo json_encode(['status' => 'error', 'message' => 'Não autorizado']);
     exit;
 }
 
-// 4. Executa a função do nosso repositório
-$veiculos = listarVeiculosDisponiveis($pdo);
+// 1. Captura o filtro enviado pelo Front-end (padrão é 'all')
+$statusFilter = $_GET['status'] ?? 'all';
 
-// 5. Devolvemos a bandeja pronta para o Front-end
-if ($veiculos !== false) {
+try {
+    // 2. Monta a Query dinamicamente com base no filtro
+    if ($statusFilter === 'available') {
+        $sql = "SELECT id, brand, model, manufacture_year, price, status 
+                FROM vehicles 
+                WHERE status = 'available' 
+                ORDER BY brand ASC, model ASC";
+    } else {
+        $sql = "SELECT id, brand, model, manufacture_year, price, status 
+                FROM vehicles 
+                ORDER BY brand ASC, model ASC";
+    }
+    
+    $stmt = $pdo->query($sql);
+    $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
     echo json_encode([
         'status' => 'success',
-        'data' => $veiculos
+        'data' => $vehicles
     ]);
-} else {
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Erro ao buscar o estoque.']);
+} catch (PDOException $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Erro ao buscar veículos: ' . $e->getMessage()
+    ]);
 }

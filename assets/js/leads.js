@@ -52,7 +52,8 @@ $(document).ready(function () {
 
 function carregarOpcoesVeiculos() {
     $.ajax({
-        url: 'api/vehicles/list_all.php',
+        // Adicionado o parâmetro ?status=available na ponta da URL
+        url: 'api/vehicles/list_all.php?status=available',
         type: 'GET',
         dataType: 'json',
         success: function (response) {
@@ -60,6 +61,11 @@ function carregarOpcoesVeiculos() {
                 const veiculos = response.data;
                 const selectAdd = $('#select-veiculos-add');
                 const selectEdit = $('#select-veiculos-edit');
+                
+                // Limpa opções antigas para não duplicar caso sofra recarregamento
+                selectAdd.find('option:not(:first)').remove();
+                selectEdit.find('option:not(:first)').remove();
+
                 veiculos.forEach(v => {
                     const option = `<option value="${v.id}">${v.brand} ${v.model} (${v.manufacture_year}) - R$ ${parseFloat(v.price).toLocaleString('pt-BR')}</option>`;
                     selectAdd.append(option);
