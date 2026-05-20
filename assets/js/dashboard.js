@@ -70,13 +70,20 @@ function desenharGraficoPerformance(dados) {
         graficoPerformance.destroy();
     }
 
+    // Gradiente Azul (Total de Leads)
     const gradientLeads = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientLeads.addColorStop(0, 'rgba(239, 68, 68, 0.4)'); 
-    gradientLeads.addColorStop(1, 'rgba(239, 68, 68, 0.0)'); 
+    gradientLeads.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // Azul
+    gradientLeads.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); 
 
+    // Gradiente Verde (Carros Vendidos)
     const gradientVendas = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientVendas.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); 
+    gradientVendas.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); // Verde
     gradientVendas.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    // Gradiente Vermelho (Leads Perdidos)
+    const gradientPerdidos = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientPerdidos.addColorStop(0, 'rgba(239, 68, 68, 0.4)'); // Vermelho
+    gradientPerdidos.addColorStop(1, 'rgba(239, 68, 68, 0.0)');
 
     graficoPerformance = new Chart(ctx, {
         type: 'line',
@@ -86,24 +93,36 @@ function desenharGraficoPerformance(dados) {
                 {
                     label: 'Total de Leads Gerados',
                     data: dados.leads,
-                    borderColor: '#ef4444',
+                    borderColor: '#3b82f6', // Azul Primary
                     backgroundColor: gradientLeads,
                     borderWidth: 3,
                     tension: 0.4,
                     fill: true,
-                    pointBackgroundColor: '#ef4444',
+                    pointBackgroundColor: '#3b82f6',
                     pointRadius: 4,
                     pointHoverRadius: 6
                 },
                 {
                     label: 'Carros Vendidos',
                     data: dados.vendas,
-                    borderColor: '#10b981',
+                    borderColor: '#10b981', // Verde Success
                     backgroundColor: gradientVendas,
                     borderWidth: 3,
                     tension: 0.4,
                     fill: true,
                     pointBackgroundColor: '#10b981',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Leads Perdidos',
+                    data: dados.perdidos, // Os novos dados da API!
+                    borderColor: '#ef4444', // Vermelho Danger
+                    backgroundColor: gradientPerdidos,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#ef4444',
                     pointRadius: 4,
                     pointHoverRadius: 6
                 }

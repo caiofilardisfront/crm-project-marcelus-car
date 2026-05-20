@@ -400,7 +400,8 @@ function getPerformanceChartData($pdo, $periodo = 'monthly') {
         $sql = "SELECT 
                     DATE_FORMAT(created_at, '$formatoData') as data_agrupada,
                     COUNT(*) as total_leads,
-                    SUM(CASE WHEN status = 'won' THEN 1 ELSE 0 END) as total_vendas
+                    SUM(CASE WHEN status = 'won' THEN 1 ELSE 0 END) as total_vendas,
+                    SUM(CASE WHEN status = 'lost' THEN 1 ELSE 0 END) as total_perdidos
                 FROM leads
                 WHERE $condicaoTempo
                 GROUP BY data_agrupada

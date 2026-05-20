@@ -27,10 +27,13 @@ $totalLeads = [];
 $totalVendas = [];
 
 // Varre os resultados do banco e separa nas gavetas corretas
+// 6. Inteligência de API 
+$labels = [];
+$totalLeads = [];
+$totalVendas = [];
+$totalPerdidos = []; // NOVO ARRAY
+
 foreach ($dadosBrutos as $linha) {
-    // Para deixar o gráfico mais bonito (UX), se o período for 'yearly' (Ex: 2024-05), 
-    // a gente inverte para o padrão brasileiro (05/2024). 
-    // Se for dia (2024-05-20), invertemos para 20/05/2024.
     $dataCrua = $linha['data_agrupada'];
     if ($periodo === 'yearly') {
         $dataFormatada = date('m/Y', strtotime($dataCrua . '-01'));
@@ -41,14 +44,16 @@ foreach ($dadosBrutos as $linha) {
     $labels[] = $dataFormatada;
     $totalLeads[] = (int) $linha['total_leads'];
     $totalVendas[] = (int) $linha['total_vendas'];
+    $totalPerdidos[] = (int) $linha['total_perdidos']; // ALIMENTANDO O NOVO ARRAY
 }
 
-// 7. Entrega o pacote pronto e "mastigado" para o Front-end
+// 7. Entrega o pacote pronto
 echo json_encode([
     'status' => 'success',
     'data' => [
         'labels' => $labels,
         'leads' => $totalLeads,
-        'vendas' => $totalVendas
+        'vendas' => $totalVendas,
+        'perdidos' => $totalPerdidos // ENVIANDO PARA O JS
     ]
 ]);
