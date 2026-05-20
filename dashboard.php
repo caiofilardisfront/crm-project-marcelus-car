@@ -60,50 +60,63 @@ $totalLeads = countLeads($pdo);
             </div>
 
             <div class="row g-4 mb-5">
+                
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="card h-100 border-0" style="border-bottom: 4px solid var(--brand-primary) !important;">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold">Total Leads</h6>
-                                <h2 class="fw-bold mb-0"><?php echo $totalLeads; ?></h2>
+                                <h2 class="fw-bold mb-0" id="kpi-total-leads">
+                                    <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+                                </h2>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(37, 99, 235, 0.1);"><i class="bi bi-people text-primary fs-4"></i></div>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="card h-100 border-0" style="border-bottom: 4px solid #f59e0b !important;">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold">Negociação</h6>
-                                <h2 class="fw-bold mb-0">12</h2>
+                                <h2 class="fw-bold mb-0" id="kpi-em-negociacao">
+                                    <span class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                                </h2>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(245, 158, 11, 0.1);"><i class="bi bi-chat-dots text-warning fs-4"></i></div>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="card h-100 border-0" style="border-bottom: 4px solid #10b981 !important;">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold">Fechados</h6>
-                                <h2 class="fw-bold mb-0">8</h2>
+                                <h2 class="fw-bold mb-0" id="kpi-fechados">
+                                    <span class="spinner-border spinner-border-sm text-success" role="status"></span>
+                                </h2>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(16, 185, 129, 0.1);"><i class="bi bi-check2-circle text-success fs-4"></i></div>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="card h-100 border-0" style="border-bottom: 4px solid #ef4444 !important;">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold">Perdidos</h6>
-                                <h2 class="fw-bold mb-0">3</h2>
+                                <h2 class="fw-bold mb-0" id="kpi-perdidos">
+                                    <span class="spinner-border spinner-border-sm text-danger" role="status"></span>
+                                </h2>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: rgba(239, 68, 68, 0.1);"><i class="bi bi-x-circle text-danger fs-4"></i></div>
                         </div>
                     </div>
                 </div>
+                
             </div>
 
             <div class="card border-secondary shadow-lg">

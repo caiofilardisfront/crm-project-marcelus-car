@@ -296,3 +296,54 @@ function excluirLeadCompleto($pdo, $lead_id)
         return false;
     }
 }
+
+/**
+ * ========================================================
+ * MOTOR DE ESTATÍSTICAS (KPIs do Dashboard)
+ * ========================================================
+ * Retorna a contagem total de leads agrupada por status em uma única query.
+ * Utiliza "Conditional Aggregation" para máxima performance no banco de dados.
+ * * @param PDO $pdo Instância da conexão com o banco
+ * @return array Array associativo com os totais já tratados
+ */
+function getLeadsStats($pdo)
+{
+    try {
+        // A MÁGICA SÊNIOR: Fazemos o banco contar todos os status de uma só vez.
+        // Se a condição for verdadeira ele soma 1, senão soma 0.
+        $sql = "SELECT 
+                    COUNT(*) AS total_leads,
+                    SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) AS total_new,
+                    SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) AS total_in_progress,
+                    SUM(CASE WHEN status = 'proposal_sent' THEN 1 ELSE 0 END) AS total_proposal,
+                    SUM(CASE WHEN status = 'won' THEN 1 ELSE 0 END) AS total_won,
+                    SUM(CASE WHEN status = 'lost' THEN 1 ELSE 0 END) AS total_lost
+                FROM leads";
+
+        $stmt = $pdo->query($sql);
+        
+        // Pega a linha única de resultados
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Tratamento Sênior: Garante que os valores voltem como inteiros (int), 
+        // mesmo se a tabela estiver vazia (null)
+        return [
+            'total_leads'       => (int) ($resultado['total_leads'] ?? 0),
+            'total_new'         => (int) ($resultado['total_new'] ?? 0),
+            'total_in_progress' => (int) ($resultado['total_in_progress'] ?? 0),
+            'total_proposal'    => (int) ($resultado['total_proposal'] ?? 0),
+            'total_won'         => (int) ($resultado['total_won'] ?? 0),
+            'total_lost'        => (int) ($resultado['total_lost'] ?? 0)
+        ];
+
+    } catch (PDOException $e) {
+        // Log silencioso para não expor erros do banco ao cliente
+        error_log("Erro em getLeadsStats: " . $e->getMessage());
+        
+        // Retorna tudo zerado em caso de falha crítica (evita quebrar a API)
+        return [
+            'total_leads' => 0, 'total_new' => 0, 'total_in_progress' => 0,
+            'total_proposal' => 0, 'total_won' => 0, 'total_lost' => 0
+        ];
+    }
+}
