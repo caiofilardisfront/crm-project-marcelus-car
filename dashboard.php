@@ -60,7 +60,7 @@ $totalLeads = countLeads($pdo);
             </div>
 
             <div class="row g-4 mb-5">
-                
+
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="card h-100 border-0" style="border-bottom: 4px solid var(--brand-primary) !important;">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
@@ -116,15 +116,41 @@ $totalLeads = countLeads($pdo);
                         </div>
                     </div>
                 </div>
-                
+
             </div>
 
             <div class="card border-secondary shadow-lg">
                 <div class="card-header bg-transparent border-secondary p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 fw-bold text-light">Últimos Leads Cadastrados</h5>
+                    <!-- Topo: Título e Botão de Ação -->
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="m-0 fw-bold text-light">
+                            <i class="bi bi-funnel text-primary me-2"></i>Funil de Leads
+                        </h5>
                         <button class="btn btn-primary btn-sm px-3 fw-bold shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-add-lead">
                             <i class="bi bi-plus-lg me-2"></i> Novo Lead
+                        </button>
+                    </div>
+
+                    <!-- Base: Botões de Filtro Estilo Premium (Pills) -->
+                    <div class="d-flex gap-2 overflow-auto pb-1 custom-scrollbar-hide" id="filtros-leads">
+                        <!-- O filtro 'Todos' começa ativo (btn-primary) -->
+                        <button class="btn btn-sm btn-primary rounded-pill px-3 fw-semibold btn-filtro" data-status="all">
+                            Todos
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold btn-filtro text-light" data-status="new">
+                            Novos
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold btn-filtro text-light" data-status="in_progress">
+                            Em Negociação
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold btn-filtro text-light" data-status="proposal_sent">
+                            Propostas
+                        </button>
+                        <button class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold btn-filtro" data-status="won">
+                            Fechados
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold btn-filtro" data-status="lost">
+                            Perdidos
                         </button>
                     </div>
                 </div>
@@ -311,7 +337,7 @@ $totalLeads = countLeads($pdo);
                 <div class="bg-danger bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center mx-auto mb-3" style="width: 80px; height: 80px;">
                     <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
                 </div>
-                
+
                 <h5 class="fw-bold mb-2">Confirmar Exclusão?</h5>
                 <p class="text-muted small mb-4">
                     Esta ação é permanente e removerá o lead e todo o seu histórico de conversas. Não será possível recuperar esses dados.

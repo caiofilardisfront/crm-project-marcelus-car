@@ -94,6 +94,7 @@ function carregarLeads() {
     $.ajax({
         url: 'api/leads/list_all.php',
         type: 'GET',
+        data: { status: status }, // MÁGICA: Enviamos o filtro para o PHP [1]
         dataType: 'json',
 
         success: function (response) {
@@ -797,3 +798,30 @@ function atualizarKPIs() {
         }
     });
 }
+
+/**
+ * ========================================================
+ * EVENTO: FILTRAGEM RÁPIDA DE LEADS
+ * ========================================================
+ */
+$(document).on('click', '.btn-filtro', function() {
+    const btn = $(this);
+    const statusEscolhido = btn.data('status'); // Pega o valor do data-status que criamos no HTML [4]
+
+    // 1. UX Visual: Gerencia as classes dos botões (Toggle active)
+    $('.btn-filtro').removeClass('btn-primary').addClass('btn-outline-secondary text-light');
+    
+    // Especial: Se for o botão 'Todos', 'Vendido' ou 'Perdido', aplicamos cores semânticas
+    if(statusEscolhido === 'all') {
+        btn.addClass('btn-primary').removeClass('btn-outline-secondary text-light');
+    } else if(statusEscolhido === 'won') {
+        btn.addClass('btn-success').removeClass('btn-outline-secondary');
+    } else if(statusEscolhido === 'lost') {
+        btn.addClass('btn-danger').removeClass('btn-outline-secondary');
+    } else {
+        btn.addClass('btn-primary').removeClass('btn-outline-secondary text-light');
+    }
+
+    // 2. Ação Real: Recarrega apenas a tabela com o filtro novo
+    carregarLeads(statusEscolhido);
+});

@@ -24,20 +24,35 @@ function countLeads($pdo)
  * @param PDO $pdo Instância da conexão com o banco
  * @return array Lista de leads (array associativo)
  */
-function getAllLeads($pdo)
+function getAllLeads($pdo, $status = 'all')
 {
     try {
-        // Adicionamos o LEFT JOIN com a tabela de veículos para buscar Marca e Modelo
+        // 1. Base da Query (Note que não encerramos a String aqui)
         $sql = "SELECT leads.*, users.name AS seller_name, vehicles.brand, vehicles.model
-                FROM leads 
-                LEFT JOIN users ON leads.user_id = users.id 
-                LEFT JOIN vehicles ON leads.vehicle_id = vehicles.id
-                ORDER BY leads.created_at DESC";
+                FROM leads
+                LEFT JOIN users ON leads.user_id = users.id
+                LEFT JOIN vehicles ON leads.vehicle_id = vehicles.id";
 
-        $stmt = $pdo->query($sql);
+        // 2. Lógica de Filtragem: Só adicionamos o WHERE se o status for diferente de 'all'
+        if ($status !== 'all' && !empty($status)) {
+            $sql .= " WHERE leads.status = :status";
+        }
+
+        // 3. Ordenação final
+        $sql .= " ORDER BY leads.created_at DESC";
+
+        $stmt = $pdo->prepare($sql);
+
+        // 4. Se houver filtro, fazemos o Bind para evitar SQL Injection
+        if ($status !== 'all' && !empty($status)) {
+            $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+        }
+
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     } catch (PDOException $e) {
-        error_log("Erro em getAllLeads: " . $e->getMessage());
+        error_log("Erro em getAllLeads com filtro: " . $e->getMessage());
         return [];
     }
 }
