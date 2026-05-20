@@ -1,6 +1,7 @@
 $(document).ready(function () {
     // 1. Carrega os leads assim que a página abre
     carregarLeads();
+    atualizarKPIs();
     carregarOpcoesVeiculos();
 
     /**
@@ -39,6 +40,7 @@ $(document).ready(function () {
 
                     // D) A MÁGICA: Recarrega a tabela por trás dos panos para o novo lead aparecer no topo!
                     carregarLeads();
+                    atualizarKPIs();
                 } else {
                     mostrarToast(response.message, 'danger');
                 }
@@ -85,6 +87,9 @@ function carregarOpcoesVeiculos() {
  */
 function carregarLeads() {
     console.log("Iniciando busca de leads na API...");
+
+    // -> Atualiza os cards de cima junto com a tabela!
+    atualizarKPIs();
 
     $.ajax({
         url: 'api/leads/list_all.php',
@@ -258,6 +263,7 @@ $(document).on('change', '.select-status', function () {
             selectElement.removeClass('opacity-50');
             // Chama a nossa nova função de Toast (Sucesso)
             mostrarToast(response.message, 'success');
+            atualizarKPIs();
         }
 
     }, 'json') // Avisamos que esperamos um JSON de volta
@@ -687,6 +693,7 @@ $(document).on('submit', '#form-edit-lead', function (e) {
 
                 // D) A MÁGICA: Recarrega a tabela principal silenciosamente
                 carregarLeads();
+                atualizarKPIs();
             } else {
                 mostrarToast(response.message, 'danger');
             }
@@ -748,6 +755,7 @@ $(document).on('click', '#btn-confirmar-exclusao-real', function () {
 
                 // C) Recarrega a tabela por trás [6]
                 carregarLeads();
+                atualizarKPIs();
             } else {
                 mostrarToast(response.message, 'danger');
             }
@@ -762,3 +770,30 @@ $(document).on('click', '#btn-confirmar-exclusao-real', function () {
         }
     });
 });
+
+/**
+ * ========================================================
+ * MOTOR DE ESTATÍSTICAS: ATUALIZA OS CARDS DE KPI
+ * ========================================================
+ */
+function atualizarKPIs() {
+    $.ajax({
+        url: 'api/leads/get_kpis.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                const dados = response.data;
+                
+                // Injeta os números com uma leve animação de opacidade (UX Premium)
+                $('#kpi-total-leads').hide().text(dados.total_leads).fadeIn(300);
+                $('#kpi-em-negociacao').hide().text(dados.negociacao_ativa).fadeIn(300);
+                $('#kpi-fechados').hide().text(dados.total_won).fadeIn(300);
+                $('#kpi-perdidos').hide().text(dados.total_lost).fadeIn(300);
+            }
+        },
+        error: function () {
+            console.error("Falha ao carregar os KPIs do Dashboard.");
+        }
+    });
+}
