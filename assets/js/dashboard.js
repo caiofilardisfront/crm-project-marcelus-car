@@ -85,7 +85,7 @@ function carregarOpcoesVeiculos() {
 /**
  * Função responsável por buscar os dados na API e preparar a tabela
  */
-function carregarLeads() {
+function carregarLeads(status = 'all') {
     console.log("Iniciando busca de leads na API...");
 
     // -> Atualiza os cards de cima junto com a tabela!
