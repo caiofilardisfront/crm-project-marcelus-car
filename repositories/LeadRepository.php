@@ -370,3 +370,50 @@ function getLeadsStats($pdo)
         ];
     }
 }
+
+/**
+ * ========================================================
+ * BUSCA DADOS DE PERFORMANCE NO TEMPO
+ * ========================================================
+ * @param PDO $pdo Instância da conexão
+ * @param string $periodo Filtro de tempo ('weekly', 'monthly', 'yearly')
+ * @return array Retorna contagens agrupadas por dia ou mês
+ */
+function getPerformanceChartData($pdo, $periodo = 'monthly') {
+    try {
+        // 1. Variáveis de formatação baseadas no período escolhido
+        $formatoData = '%Y-%m-%d'; // Padrão: Agrupa por Dia (Ano-Mês-Dia)
+        $condicaoTempo = "created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)"; // Padrão: Últimos 30 dias
+
+        // 2. Ajusta a Query dependendo do que o usuário escolheu no Front-end
+        if ($periodo === 'weekly') {
+            // Últimos 7 dias, agrupado por dia
+            $formatoData = '%Y-%m-%d';
+            $condicaoTempo = "created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+        } elseif ($periodo === 'yearly') {
+            // Este ano, agrupado por mês (Ex: 2024-01, 2024-02)
+            $formatoData = '%Y-%m'; 
+            $condicaoTempo = "YEAR(created_at) = YEAR(CURDATE())";
+        }
+
+        // 3. A Mágica do SQL: Agrupamento Dinâmico e Contagem Condicional
+        $sql = "SELECT 
+                    DATE_FORMAT(created_at, '$formatoData') as data_agrupada,
+                    COUNT(*) as total_leads,
+                    SUM(CASE WHEN status = 'won' THEN 1 ELSE 0 END) as total_vendas
+                FROM leads
+                WHERE $condicaoTempo
+                GROUP BY data_agrupada
+                ORDER BY data_agrupada ASC";
+
+        // Como as variáveis já são controladas pelo sistema (não vêm diretamente do usuário),
+        // podemos injetá-las de forma segura e rodar o query direto.
+        $stmt = $pdo->query($sql);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        error_log("Erro no getPerformanceChartData: " . $e->getMessage());
+        return [];
+    }
+}

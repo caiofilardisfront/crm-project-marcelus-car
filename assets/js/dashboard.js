@@ -4,6 +4,10 @@ $(document).ready(function () {
     atualizarKPIs();
     carregarOpcoesVeiculos();
 
+    $('#filtro-tempo-grafico').on('change', function () {
+        atualizarGrafico();
+    });
+
     /**
      * ========================================================
      * NOVA TAREFA: DELEGAÇÃO DE EVENTO PARA SALVAR NOVO LEAD (POST)
@@ -86,10 +90,12 @@ function carregarOpcoesVeiculos() {
  * Função responsável por buscar os dados na API e preparar a tabela
  */
 function carregarLeads(status = 'all', termoBusca = '') {
+    const termoBusca = $('#input-pesquisa-leads').val() || '';
     console.log("Iniciando busca de leads na API...");
 
     // -> Atualiza os cards de cima junto com a tabela!
     atualizarKPIs();
+    atualizarGrafico();
 
     $.ajax({
         url: 'api/leads/list_all.php',
@@ -867,3 +873,114 @@ $(document).on('keyup', '#input-busca', function() {
     // 3. Dispara a busca cruzando as duas informações!
     carregarLeads(statusAtivo, valorDigitado);
 });
+
+/**
+ * ========================================================
+ * MOTOR DE RENDERIZAÇÃO: GRÁFICO CHART.JS
+ * ========================================================
+ */
+let graficoPerformance = null; // Variável global para guardar a instância do gráfico
+
+function atualizarGrafico() {
+    const periodoSelecionado = $('#filtro-tempo-grafico').val();
+
+    $.ajax({
+        url: 'api/leads/get_chart_data.php',
+        type: 'GET',
+        data: { periodo: periodoSelecionado },
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                desenharGraficoPerformance(response.data);
+            }
+        },
+        error: function () {
+            console.error("Falha ao carregar os dados do gráfico.");
+        }
+    });
+}
+
+function desenharGraficoPerformance(dados) {
+    const canvas = document.getElementById('grafico-performance');
+    const ctx = canvas.getContext('2d');
+
+    // REGRA DE OURO DO CHART.JS: Destruir o gráfico antigo antes de desenhar o novo
+    if (graficoPerformance !== null) {
+        graficoPerformance.destroy();
+    }
+
+    // UX Premium: Criando gradientes de preenchimento para as linhas
+    const gradientLeads = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientLeads.addColorStop(0, 'rgba(239, 68, 68, 0.4)'); // brand-primary (vermelho) com opacidade
+    gradientLeads.addColorStop(1, 'rgba(239, 68, 68, 0.0)'); // some no final
+
+    const gradientVendas = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientVendas.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); // verde (success) com opacidade
+    gradientVendas.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    // Inicia a nova pintura
+    graficoPerformance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dados.labels, // As datas formatadas (Eixo X)
+            datasets: [
+                {
+                    label: 'Total de Leads Gerados',
+                    data: dados.leads,
+                    borderColor: '#ef4444',
+                    backgroundColor: gradientLeads,
+                    borderWidth: 3,
+                    tension: 0.4, // Curva suave na linha
+                    fill: true,
+                    pointBackgroundColor: '#ef4444',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Carros Vendidos',
+                    data: dados.vendas,
+                    borderColor: '#10b981',
+                    backgroundColor: gradientVendas,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#10b981',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index', // Ao passar o mouse, mostra os dois valores ao mesmo tempo
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    labels: { color: '#a1a1aa', font: { family: "'Inter', sans-serif", size: 13 } }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(24, 24, 27, 0.95)', // Fundo dark do nosso CSS
+                    titleColor: '#f4f4f5',
+                    bodyColor: '#a1a1aa',
+                    borderColor: '#27272a',
+                    borderWidth: 1,
+                    padding: 12
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#27272a', drawBorder: false }, // Linhas de grade sutis
+                    ticks: { color: '#a1a1aa' }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#27272a', drawBorder: false },
+                    ticks: { color: '#a1a1aa', stepSize: 1 } // Como vendemos carros, pula de 1 em 1
+                }
+            }
+        }
+    });
+}

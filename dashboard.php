@@ -127,7 +127,7 @@ $totalLeads = countLeads($pdo);
                             <i class="bi bi-funnel text-primary me-2"></i>Funil de Leads
                         </h5>
 
-                        
+
 
                         <button class="btn btn-primary btn-sm px-3 fw-bold shadow-sm d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-add-lead">
                             <i class="bi bi-plus-lg me-2"></i> <span class="d-none d-sm-inline">Novo Lead</span>
@@ -160,7 +160,7 @@ $totalLeads = countLeads($pdo);
                             <input type="text" id="input-busca" class="form-control bg-dark border-secondary text-light shadow-none" placeholder="Procurar cliente ou telefone...">
                         </div>
                     </div>
-                   
+
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -185,7 +185,31 @@ $totalLeads = countLeads($pdo);
                     </div>
                 </div>
             </div>
+            <!-- ========================================================
+     TAREFA 1: GRÁFICO DE PERFORMANCE DE VENDAS
+======================================================== -->
+            <div class="card border-secondary shadow-lg mt-5">
 
+                <!-- Cabeçalho do Gráfico com Filtro de Tempo -->
+                <div class="card-header bg-transparent border-secondary p-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                    <h5 class="m-0 fw-bold text-light">
+                        <i class="bi bi-bar-chart-line-fill text-primary me-2"></i>Performance de Vendas
+                    </h5>
+
+                    <!-- Seletor de Período (Semanal, Mensal, Anual) -->
+                    <select id="filtro-tempo-grafico" class="form-select form-select-sm bg-dark text-light border-secondary shadow-none" style="width: auto; cursor: pointer;">
+                        <option value="weekly">Últimos 7 dias</option>
+                        <option value="monthly" selected>Últimos 30 dias</option>
+                        <option value="yearly">Este Ano</option>
+                    </select>
+                </div>
+
+                <!-- Corpo do Gráfico -->
+                <div class="card-body p-4" style="position: relative; height: 350px; width: 100%;">
+                    <!-- A "tela de pintura" do Chart.js -->
+                    <canvas id="grafico-performance"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
