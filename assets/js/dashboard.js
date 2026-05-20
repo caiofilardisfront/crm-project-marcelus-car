@@ -90,7 +90,7 @@ function carregarOpcoesVeiculos() {
  * Função responsável por buscar os dados na API e preparar a tabela
  */
 function carregarLeads(status = 'all', termoBusca = '') {
-    const termoBusca = $('#input-pesquisa-leads').val() || '';
+    //const termoBusca = $('#input-pesquisa-leads').val() || '';
     console.log("Iniciando busca de leads na API...");
 
     // -> Atualiza os cards de cima junto com a tabela!
