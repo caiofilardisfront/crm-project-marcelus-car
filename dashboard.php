@@ -151,6 +151,7 @@ $totalLeads = countLeads($pdo);
 
 
 
-<script src="<?php echo BASE_URL; ?>assets/js/dashboard.js"></script>
 <?php include 'includes/modals/lead_details_modal.php'; ?>
 <?php include 'includes/footer.php'; ?>
+
+<script src="<?php echo BASE_URL; ?>assets/js/dashboard.js"></script>
