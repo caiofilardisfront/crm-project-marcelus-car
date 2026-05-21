@@ -102,7 +102,7 @@ if (!isset($_SESSION['user_id'])) {
             </div>
 
             <!-- Formulário -->
-            <form id="form-add-veiculo">
+            <form id="form-add-veiculo" enctype="multipart/form-data">
                 <div class="modal-body p-4">
                     <div class="row g-4">
                         <div class="col-md-6">
@@ -112,6 +112,11 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold text-uppercase mb-1">Modelo *</label>
                             <input type="text" name="model" class="form-control" placeholder="Ex: Corolla XEI" required>
+                        </div>
+                        <div class="mb-12">
+                            <label for="vehicle_image" class="form-label text-muted small fw-bold">Foto do Veículo (Opcional)</label>
+                            <input type="file" class="form-control bg-dark text-light border-secondary" id="vehicle_image" name="image" accept="image/*">
+                            <div class="form-text text-muted" style="font-size: 0.75rem;">Formatos aceitos: JPG, PNG, WEBP. Máx: 2MB.</div>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label text-muted small fw-bold text-uppercase mb-1">Ano Fab. *</label>

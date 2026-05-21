@@ -15,19 +15,21 @@ $statusFilter = $_GET['status'] ?? 'all';
 try {
     // 2. Monta a Query dinamicamente com base no filtro
     if ($statusFilter === 'available') {
-        $sql = "SELECT id, brand, model, manufacture_year, price, status 
+        // ADICIONADO: model_year, mileage, license_plate e image_path
+        $sql = "SELECT id, brand, model, manufacture_year, model_year, mileage, price, license_plate, status, image_path 
                 FROM vehicles 
                 WHERE status = 'available' 
                 ORDER BY brand ASC, model ASC";
     } else {
-        $sql = "SELECT id, brand, model, manufacture_year, price, status 
+        // ADICIONADO: license_plate e image_path
+        $sql = "SELECT id, brand, model, manufacture_year, model_year, mileage, price, license_plate, status, image_path 
                 FROM vehicles 
                 ORDER BY brand ASC, model ASC";
     }
-    
+
     $stmt = $pdo->query($sql);
     $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     echo json_encode([
         'status' => 'success',
         'data' => $vehicles

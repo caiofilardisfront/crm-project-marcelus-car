@@ -32,22 +32,20 @@ function listarVeiculosDisponiveis($pdo) {
 function adicionarVeiculo($pdo, $dados) {
     try {
         // Query de inserção usando âncoras (:param) para segurança
-        $sql = "INSERT INTO vehicles 
-                (brand, model, manufacture_year, model_year, mileage, price, status) 
-                VALUES 
-                (:brand, :model, :manufacture_year, :model_year, :mileage, :price, 'available')";
+        $sql = "INSERT INTO vehicles (brand, model, manufacture_year, model_year, mileage, price, image_path) 
+            VALUES (:brand, :model, :manufacture_year, :model_year, :mileage, :price, :image_path)";
                 
         $stmt = $pdo->prepare($sql);
         
-        // Fazendo o Bind (ligação) dos dados de forma segura
-        $stmt->bindValue(':brand', $dados['brand']);
-        $stmt->bindValue(':model', $dados['model']);
-        $stmt->bindValue(':manufacture_year', $dados['manufacture_year'], PDO::PARAM_INT);
-        $stmt->bindValue(':model_year', $dados['model_year'], PDO::PARAM_INT);
-        $stmt->bindValue(':mileage', $dados['mileage'] ?? 0, PDO::PARAM_INT);
-        $stmt->bindValue(':price', $dados['price']); // Vem como decimal (ex: 95000.00)
-        
-        return $stmt->execute();
+        return $stmt->execute([
+        ':brand' => $dados['brand'],
+        ':model' => $dados['model'],
+        ':manufacture_year' => $dados['manufacture_year'],
+        ':model_year' => $dados['model_year'],
+        ':mileage' => $dados['mileage'],
+        ':price' => $dados['price'],
+        ':image_path' => $dados['image_path'] // <-- O novo valor entra no banco aqui
+    ]);
     } catch (PDOException $e) {
         error_log("Erro em adicionarVeiculo: " . $e->getMessage());
         return false;

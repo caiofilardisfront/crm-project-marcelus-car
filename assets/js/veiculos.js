@@ -8,61 +8,38 @@ $(document).ready(function () {
      * ========================================================
      */
     $('#form-add-veiculo').on('submit', function (e) {
-        // Bloqueia o F5 automático do formulário HTML
         e.preventDefault();
-
         const form = $(this);
         const btnSubmit = form.find('button[type="submit"]');
         const textoOriginal = btnSubmit.html();
 
-        // UX Premium: Troca o botão para "Salvando..." com o spinner rodando
         btnSubmit.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Salvando...');
+
+        // 🛠️ TOQUE SÊNIOR: Cria o objeto FormData que empacota texto e imagem
+        const formData = new FormData(this);
 
         $.ajax({
             url: 'api/vehicles/add.php',
             type: 'POST',
-            data: form.serialize(), // Pega todos os campos e formata para envio
+            data: formData, // Usa o formData em vez de form.serialize()
+            contentType: false, // OBRIGATÓRIO: Avisa o jQuery para não mexer no cabeçalho do arquivo
+            processData: false, // OBRIGATÓRIO: Avisa o jQuery para não converter o arquivo em string
             dataType: 'json',
             success: function (response) {
                 if (response.status === 'success') {
-                    // Fecha o Modal flutuante
                     $('#modal-add-veiculo').modal('hide');
-
-                    // Limpa todos os campos para o próximo cadastro
                     form[0].reset();
-
-                    // Se a função mostrarToast (do dashboard) estiver disponível, usa ela. Senão, usa alert nativo.
-                    if (typeof mostrarToast === 'function') {
-                        mostrarToast(response.message, 'success');
-                    } else {
-                        alert(response.message);
-                    }
-
-                    // A MÁGICA: Recarrega a tabela instantaneamente para mostrar o carro novo
-                    carregarVeiculos();
+                    mostrarToast(response.message, 'success');
+                    carregarVeiculos(); // Recarrega a tabela de estoque
                 } else {
-                    if (typeof mostrarToast === 'function') {
-                        mostrarToast(response.message, 'danger');
-                    } else {
-                        alert(response.message);
-                    }
+                    mostrarToast(response.message, 'danger');
                 }
             },
             error: function (xhr) {
-                console.error("Erro no servidor:", xhr.responseText);
-                let errorMsg = "Erro interno ao salvar veículo.";
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMsg = xhr.responseJSON.message;
-                }
-
-                if (typeof mostrarToast === 'function') {
-                    mostrarToast(errorMsg, 'danger');
-                } else {
-                    alert(errorMsg);
-                }
+                let errorMsg = xhr.responseJSON?.message || "Erro interno ao salvar veículo.";
+                mostrarToast(errorMsg, 'danger');
             },
             complete: function () {
-                // Devolve o botão ao estado original independente de sucesso ou falha
                 btnSubmit.prop('disabled', false).html(textoOriginal);
             }
         });
@@ -82,17 +59,15 @@ function carregarVeiculos() {
         type: 'GET',
         dataType: 'json',
         success: function (response) {
-            // Limpa a mensagem de "Buscando estoque..."
             tabela.empty();
 
             if (response.status === 'success') {
                 const veiculos = response.data;
 
-                // Se não houver nenhum carro no estoque (Array vazio)
                 if (veiculos.length === 0) {
                     tabela.html(`
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
+                            <td colspan="6" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
                                 Nenhum veículo cadastrado no estoque.
                             </td>
@@ -101,65 +76,66 @@ function carregarVeiculos() {
                     return;
                 }
 
-                // Se houver carros, iteramos pelo array desenhando a tabela
-                // Localize este trecho dentro da função carregarVeiculos()
-                veiculos.forEach(function (carro) {
-                    // 1. Formatações de Design Premium
-                    const precoFormatado = parseFloat(carro.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    const kmFormatado = carro.mileage ? parseInt(carro.mileage).toLocaleString('pt-BR') + ' km' : '0 km';
+                // Usando 'v' como variável para representar cada veículo
+                veiculos.forEach(function (v) {
+                    // 1. Formatações
+                    const precoFormatado = parseFloat(v.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    const kmFormatado = v.mileage ? parseInt(v.mileage).toLocaleString('pt-BR') + ' km' : '0 km';
 
+                    // 2. Select Dinâmico de Status
                     let corStatus = '';
-                    if (carro.status === 'available') {
-                        corStatus = 'bg-success text-white'; // Verde
-                    } else if (carro.status === 'reserved') {
-                        corStatus = 'bg-warning text-dark';  // Amarelo
-                    } else if (carro.status === 'sold') {
-                        corStatus = 'bg-danger text-white';  // Vermelho
-                    }
-                    // 2. Criação do Select Dinâmico (Removidos os comentários que bloqueavam a visualização)
+                    if (v.status === 'available') corStatus = 'bg-success text-white';
+                    else if (v.status === 'reserved') corStatus = 'bg-warning text-dark';
+                    else if (v.status === 'sold') corStatus = 'bg-danger text-white';
+
                     const statusSelect = `
                         <select class="form-select form-select-sm border-0 fw-bold shadow-sm mx-auto ${corStatus} select-status-veiculo" 
-            data-id="${carro.id}" 
-            style="width: 140px; cursor: pointer; border-radius: 50rem; text-align: center; background-position: right 0.5rem center;">
-        <option value="available" class="bg-dark text-light" ${carro.status === 'available' ? 'selected' : ''}>Disponível</option>
-        <option value="reserved"  class="bg-dark text-light" ${carro.status === 'reserved' ? 'selected' : ''}>Indisponível</option>
-        <option value="sold"      class="bg-dark text-light" ${carro.status === 'sold' ? 'selected' : ''}>Vendido</option>
-    </select>
+                            data-id="${v.id}" 
+                            style="width: 140px; cursor: pointer; border-radius: 50rem; text-align: center;">
+                            <option value="available" class="bg-dark text-light" ${v.status === 'available' ? 'selected' : ''}>Disponível</option>
+                            <option value="reserved"  class="bg-dark text-light" ${v.status === 'reserved' ? 'selected' : ''}>Indisponível</option>
+                            <option value="sold"      class="bg-dark text-light" ${v.status === 'sold' ? 'selected' : ''}>Vendido</option>
+                        </select>
                     `;
 
-                    // 3. Montagem da Linha (Aqui estava o erro: a <td> de status estava comentada)
-                    const tr = `
-    <tr class="border-secondary">
-        <td class="py-3 ps-4 align-middle">
-            <div class="fw-bold text-light">
-                <i class="bi bi-car-front text-secondary me-2"></i> ${carro.brand} ${carro.model}
-            </div>
-        </td>
-        <td class="py-3 align-middle text-muted small">
-            ${carro.manufacture_year} / ${carro.model_year}
-        </td>
-        <td class="py-3 align-middle text-muted small">
-            ${kmFormatado}
-        </td>
-        <td class="py-3 align-middle fw-semibold text-light" style="letter-spacing: 0.5px;">
-            R$ ${precoFormatado}
-        </td>
-        <td class="py-3 align-middle text-center d-flex justify-content-center border-0">
-            ${statusSelect}
-        </td>
-    </tr>
-    `;
+                    // 3. Lógica de Exibição da Imagem (Foto ou Ícone)
+                    let iconeOuImagem = '<i class="bi bi-car-front fs-4 text-secondary"></i>';
+                    if (v.image_path) {
+                        iconeOuImagem = `<img src="${v.image_path}" alt="Foto ${v.model}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">`;
+                    }
 
-                    // 4. Injeta na tabela
+                    // 4. Montagem da Linha
+                    const tr = `
+                    <tr class="border-secondary align-middle">
+                        <td class="py-3 ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-dark rounded p-1 me-3 border border-secondary d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                                    ${iconeOuImagem}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-light">${v.brand} ${v.model}</div>
+                                    <small class="text-muted">Placa: ${v.license_plate || 'Não info.'}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 text-muted">${v.manufacture_year} / ${v.model_year}</td>
+                        <td class="py-3 text-muted">${kmFormatado}</td>
+                        <td class="py-3 fw-semibold text-light">R$ ${precoFormatado}</td>
+                        <td class="py-3">${statusSelect}</td>
+                        <td class="py-3 pe-4 text-end">
+                            <button class="btn btn-sm btn-outline-primary btn-edit me-1" data-id="${v.id}" title="Editar"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${v.id}" title="Excluir"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`;
+
                     tabela.append(tr);
                 });
             }
         },
         error: function () {
-            // Em caso de falha de comunicação com a API
             tabela.html(`
                 <tr>
-                    <td colspan="5" class="text-center py-4 text-danger fw-bold">
+                    <td colspan="6" class="text-center py-4 text-danger fw-bold">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i> Erro ao carregar o estoque de veículos.
                     </td>
                 </tr>
@@ -179,7 +155,7 @@ $(document).on('change', '.select-status-veiculo', function () {
     // --- NOVA LÓGICA DE CORES ---
     // 1. Remove todas as cores antigas para limpar o elemento
     select.removeClass('bg-success bg-warning bg-danger text-white text-dark');
-    
+
     // 2. Aplica a nova cor imediatamente baseada na escolha
     if (newStatus === 'available') {
         select.addClass('bg-success text-white');
