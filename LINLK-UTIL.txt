@@ -1,0 +1,24 @@
+http://localhost/crm-php-test/crm-marcelus-car/agenda.php
+
+admin@marceluscar.com.br
+senha_provisoria_123.
+
+
+PROMPT:
+
+Verifique se foi implementado corretamente!
+
+E analisando o repositório, detalhada e minuciosamente, código a código, de ponta a ponta.
+
+
+PLANO DE AÇÃO:
+
+
+
+=== PRÓXIMA ETAPA ===
+
+P2
+Perfil do Usuário (Minha Conta): Criar a tela para o vendedor conseguir trocar a própria senha e o próprio nome, sem precisar mexer no banco de dados.
+
+P3
+Preparação para Deploy / Segurança: Fazer uma revisão de segurança final, criar um arquivo .htaccess para proteger as pastas internas e remover os acessos do localhost.
