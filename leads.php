@@ -42,6 +42,7 @@ if (!isset($_SESSION['user_id'])) {
 
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg border-secondary mt-2">
+                    <li><a class="dropdown-item text-light py-2" href="<?php echo BASE_URL; ?>perfil.php"><i class="bi bi-person-gear me-2"></i> Minha Conta</a></li>
                     <li><a class="dropdown-item py-2 text-danger fw-bold" href="<?php echo BASE_URL; ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Sair do Sistema</a></li>
                 </ul>
             </div>

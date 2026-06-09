@@ -40,12 +40,20 @@ $totalLeads = countLeads($pdo);
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg mt-2 border-secondary" aria-labelledby="dropdownUser">
                             <li>
-                                <div class="px-4 py-2"><strong class="d-block"><?php echo $_SESSION['user_name']; ?></strong><small class="text-muted">Administrador</small></div>
+                                <div class="px-4 py-2">
+                                    <strong class="d-block"><?php echo $_SESSION['user_name']; ?></strong>
+                                    <small class="text-muted">Administrador</small>
+                                </div>
                             </li>
                             <li>
                                 <hr class="dropdown-divider border-secondary">
                             </li>
-                            <li><a class="dropdown-item text-danger fw-bold" href="<?php echo BASE_URL; ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Sair</a></li>
+
+                            <!-- 👇 ADICIONE ESTA NOVA LINHA AQUI 👇 -->
+                            <li><a class="dropdown-item text-light py-2" href="<?php echo BASE_URL; ?>perfil.php"><i class="bi bi-person-gear me-2"></i> Minha Conta</a></li>
+
+                            <!-- O botão de Sair já existente -->
+                            <li><a class="dropdown-item text-danger fw-bold py-2" href="<?php echo BASE_URL; ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Sair do Sistema</a></li>
                         </ul>
                     </div>
                 </div>
@@ -119,7 +127,7 @@ $totalLeads = countLeads($pdo);
 
             </div>
 
-            
+
             <!-- ========================================================
      TAREFA 1: GRÁFICO DE PERFORMANCE DE VENDAS
 ======================================================== -->

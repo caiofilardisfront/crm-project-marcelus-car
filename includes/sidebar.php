@@ -1,9 +1,9 @@
 <div class="offcanvas-lg offcanvas-start bg-dark text-light border-end border-secondary d-flex flex-column vh-100" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="width: 280px; min-width: 280px;">
 
-    <div class="offcanvas-header border-bottom border-secondary d-flex justify-content-center position-relative" style="height: 65px;">
+    <div class="offcanvas-header border-bottom border-secondary d-flex justify-content-center position-relative" style="height: 85px;">
 
         <a href="<?php echo BASE_URL; ?>dashboard.php" class="text-decoration-none">
-            <img src="<?php echo BASE_URL; ?>assets/img/logo-marcelus.svg" alt="Marcelus Car" style="max-height: 40px; width: auto;" onerror="this.outerHTML='<h4 class=\'m-0 fw-bold text-light\'><i class=\'bi bi-car-front-fill text-primary me-2\'></i>Marcelus Car</h4>'">
+            <img src="<?php echo BASE_URL; ?>assets/img/logo-marcelus-car.webp" alt="Marcelus Car" style="max-height: 65px; width: auto;" onerror="this.outerHTML='<h4 class=\'m-0 fw-bold text-light\'><i class=\'bi bi-car-front-fill text-primary me-2\'></i>Marcelus Car</h4>'">
         </a>
 
         <button type="button" class="btn-close btn-close-white d-lg-none position-absolute end-0 me-3" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#sidebarMenu"></button>
@@ -38,7 +38,8 @@
             </li>
 
             <li class="nav-item mb-2">
-                <a href="#" class="nav-link text-light">
+                <!-- O PHP descobre em qual página estamos e adiciona a cor azul ('active bg-primary') se for a tela de configurações -->
+                <a href="<?php echo BASE_URL; ?>configuracoes.php" class="nav-link text-light <?php echo basename($_SERVER['PHP_SELF']) == 'configuracoes.php' ? 'active bg-primary' : ''; ?>">
                     <i class="bi bi-gear-fill me-2"></i> Configurações
                 </a>
             </li>

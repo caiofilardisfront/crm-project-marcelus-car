@@ -168,24 +168,33 @@ function getLeadById($pdo, $id)
 function adicionarLead($pdo, $dados)
 {
     try {
+        // TAREFA 1.1: Query SQL atualizada com as UTMs
         $sql = "INSERT INTO leads 
-                (user_id, vehicle_id, origin_id, customer_name, customer_phone, customer_email, status, temperature) 
+                (user_id, vehicle_id, origin_id, customer_name, customer_phone, customer_email, status, temperature, utm_source, utm_medium, utm_campaign) 
                 VALUES 
-                (:user_id, :vehicle_id, :origin_id, :customer_name, :customer_phone, :customer_email, 'new', 'warm')";
+                (:user_id, :vehicle_id, :origin_id, :customer_name, :customer_phone, :customer_email, 'new', 'warm', :utm_source, :utm_medium, :utm_campaign)";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':user_id', (int) $dados['user_id'], PDO::PARAM_INT);
-        // Tratamento para salvar NULL se nenhum carro for selecionado
+
+        // Binds antigos
+        $stmt->bindValue(':user_id', !empty($dados['user_id']) ? (int) $dados['user_id'] : null, PDO::PARAM_INT);
         $stmt->bindValue(':vehicle_id', !empty($dados['vehicle_id']) ? (int) $dados['vehicle_id'] : null, PDO::PARAM_INT);
         $stmt->bindValue(':origin_id', (int) $dados['origin_id'], PDO::PARAM_INT);
         $stmt->bindValue(':customer_name', $dados['customer_name']);
         $stmt->bindValue(':customer_phone', $dados['customer_phone']);
-
+        
         $email = empty($dados['customer_email']) ? null : $dados['customer_email'];
         $stmt->bindValue(':customer_email', $email, PDO::PARAM_STR);
 
+        // TAREFAS 1.2 e 1.3: Data Binding seguro com tratamento de Fallback (?? null)
+        $stmt->bindValue(':utm_source', $dados['utm_source'] ?? null, PDO::PARAM_STR);
+        $stmt->bindValue(':utm_medium', $dados['utm_medium'] ?? null, PDO::PARAM_STR);
+        $stmt->bindValue(':utm_campaign', $dados['utm_campaign'] ?? null, PDO::PARAM_STR);
+
         $stmt->execute();
+        
         return $pdo->lastInsertId();
+
     } catch (PDOException $e) {
         throw new Exception("Erro do MySQL: " . $e->getMessage());
     }
