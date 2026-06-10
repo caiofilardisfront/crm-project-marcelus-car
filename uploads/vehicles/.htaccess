@@ -1,0 +1,23 @@
+# 1. DESLIGA O MOTOR PHP NESTA PASTA
+# Se alguém subir um .php, o Apache vai ler apenas como um texto morto (txt)
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# 2. BLOQUEIO DUPLO (GARANTIA EXTRA)
+# Proíbe explicitamente que o servidor entregue qualquer arquivo com extensões executáveis
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|php8|cgi|pl|py|sh|exe)$">
+    Require all denied
+</FilesMatch>
+
+# 3. PERMITE APENAS IMAGENS (Whitelist)
+# Garante que só imagens poderão ser acessadas/vistas nesta pasta
+<FilesMatch "\.(?i:jpg|jpeg|png|webp|gif)$">
+    Require all granted
+</FilesMatch>

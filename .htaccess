@@ -1,0 +1,16 @@
+# 1. BLOQUEIO GLOBAL DE INDEXAÇÃO
+# Ordena ao servidor Apache que NUNCA liste os arquivos de uma pasta vazia
+Options -Indexes
+
+# 2. MASCARAMENTO DE ERROS E UX SECURITY
+# Captura invasores ou erros de digitação e os envia de volta para a tela de login
+ErrorDocument 403 /crm-php-test/crm-marcelus-car/index.php
+ErrorDocument 404 /crm-php-test/crm-marcelus-car/index.php
+
+# 3. BLINDAGEM DO COFRE (Back-end)
+# Intercepta qualquer tentativa de acesso via URL diretamente a essas pastas de infraestrutura
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Se a URL acessada começar com config/, repositories/ ou includes/...
+    RewriteRule ^(config|repositories|includes)/ - [F,L]
+</IfModule>

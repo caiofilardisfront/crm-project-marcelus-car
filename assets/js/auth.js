@@ -6,6 +6,10 @@ $(document).ready(function() {
         // 1. O SEGREDO DO AJAX: Isso bloqueia o comportamento padrão do HTML de recarregar a página
         e.preventDefault(); 
 
+
+        // Esconde o alerta de erro antigo sempre que o usuário tentar logar novamente
+        $('#login-alert').addClass('d-none');
+
         // 2. Feedback visual no botão
         let btn = $(this).find('button[type="submit"]');
         let textoOriginal = btn.text();
@@ -29,7 +33,7 @@ $(document).ready(function() {
                 window.location.href = 'dashboard.php';
             } else {
                 // Erro: Mostra um alerta com a mensagem do PHP (ex: E-mail incorreto)
-                alert(resposta.message);
+                $('#login-alert').text(resposta.message).removeClass('d-none');
                 
                 // Volta o botão ao normal para o usuário tentar de novo
                 btn.prop('disabled', false).text(textoOriginal);
@@ -37,7 +41,7 @@ $(document).ready(function() {
 
         }).fail(function() {
             // Se o arquivo PHP der erro 500 ou não for encontrado (404), cai aqui
-            alert("Erro crítico: Servidor inacessível. Verifique o console.");
+            $('#login-alert').text("Erro crítico: Servidor inacessível. Verifique o console.").removeClass('d-none');
             btn.prop('disabled', false).text(textoOriginal);
         });
 
